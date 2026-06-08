@@ -1,6 +1,6 @@
 {
   "name": "obsidian-sql-viewer",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Read-only SQLite database inspector.",
   "license": "MIT",
   "author": "Viggo Meesters",

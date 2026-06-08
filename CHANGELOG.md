@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.1
+
+- Improved object list layout so type chips, object names, and row counts do not overlap in Obsidian.
+- Removed the cramped internal height clamp from the Objects panel.
+
 ## 0.1.0
 
 - Initial read-only SQLite viewer.

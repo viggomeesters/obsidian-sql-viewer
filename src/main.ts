@@ -224,8 +224,9 @@ class SqlViewerView extends FileView {
       });
       button.toggleClass("is-active", object.name === this.activeObject);
       button.createSpan({ cls: `sql-viewer__object-type is-${object.type}`, text: object.type });
-      button.createSpan({ cls: "sql-viewer__object-name", text: object.name });
-      button.createSpan({
+      const label = button.createSpan({ cls: "sql-viewer__object-label" });
+      label.createSpan({ cls: "sql-viewer__object-name", text: object.name });
+      label.createSpan({
         cls: "sql-viewer__object-meta",
         text: object.rowCount === null ? object.tableName : `${object.rowCount} rows`,
       });

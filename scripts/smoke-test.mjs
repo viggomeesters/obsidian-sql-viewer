@@ -1,6 +1,7 @@
 import fs from "node:fs";
 
 const manifest = JSON.parse(fs.readFileSync("manifest.json", "utf8"));
+const packageJson = JSON.parse(fs.readFileSync("package.json", "utf8"));
 const main = fs.readFileSync("src/main.ts", "utf8");
 const sqlite = fs.readFileSync("src/sqlite.ts", "utf8");
 const styles = fs.readFileSync("styles.css", "utf8");
@@ -10,7 +11,7 @@ const bundle = fs.readFileSync("main.js", "utf8");
 const assertions = [
   [manifest.id === "sql-viewer", "manifest id is sql-viewer"],
   [manifest.name === "SQL Viewer", "manifest name is SQL Viewer"],
-  [manifest.version === "0.1.0", "manifest version is 0.1.0"],
+  [manifest.version === packageJson.version, "manifest and package versions match"],
   [versions[manifest.version] === manifest.minAppVersion, "versions.json maps manifest version to min app version"],
   [!/obsidian/i.test(manifest.description), "manifest description avoids product name"],
   [/^[a-z-]+$/.test(manifest.id) && !manifest.id.includes("obsidian") && !manifest.id.endsWith("plugin"), "manifest id follows directory rules"],
