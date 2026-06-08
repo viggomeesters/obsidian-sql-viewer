@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">SQL Viewer social preview</title>
+  <desc id="desc">Read-only SQLite inspection for Obsidian vault files.</desc>
+  <rect width="1200" height="630" fill="#12161b"/>
+  <rect x="66" y="68" width="1068" height="494" rx="24" fill="#1f242a" stroke="#3b444e"/>
+  <text x="112" y="158" fill="#f7fafc" font-family="Inter, Arial, sans-serif" font-size="58" font-weight="820">SQL Viewer</text>
+  <text x="116" y="208" fill="#aab4bf" font-family="Inter, Arial, sans-serif" font-size="25">Read-only SQLite tables, schema, and previews</text>
+  <g transform="translate(116 262)">
+    <rect width="968" height="232" rx="14" fill="#0c1117" stroke="#3b444e"/>
+    <rect width="968" height="50" rx="14" fill="#28313a"/>
+    <g fill="#dbe4ec" font-family="Menlo, Consolas, monospace" font-size="20" font-weight="700">
+      <text x="30" y="33">object</text><text x="216" y="33">name</text><text x="470" y="33">rows</text><text x="676" y="33">mode</text>
+    </g>
+    <g fill="#f1e276" font-family="Menlo, Consolas, monospace" font-size="20">
+      <text x="30" y="94">table</text><text x="216" y="94">events</text><text x="470" y="94">250</text><text x="676" y="94">read-only</text>
+      <text x="30" y="148">view</text><text x="216" y="148">recent_events</text><text x="470" y="148">20</text><text x="676" y="148">read-only</text>
+      <text x="30" y="202">index</text><text x="216" y="202">idx_events_time</text><text x="470" y="202">-</text><text x="676" y="202">metadata</text>
+    </g>
+    <g stroke="#28313a">
+      <line x1="186" y1="0" x2="186" y2="232"/>
+      <line x1="440" y1="0" x2="440" y2="232"/>
+      <line x1="646" y1="0" x2="646" y2="232"/>
+      <line x1="0" y1="50" x2="968" y2="50"/>
+      <line x1="0" y1="114" x2="968" y2="114"/>
+      <line x1="0" y1="168" x2="968" y2="168"/>
+    </g>
+  </g>
+</svg>

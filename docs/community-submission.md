@@ -11,6 +11,7 @@ Before submission:
 - `manifest.json` id is `sql-viewer`.
 - `README.md`, `LICENSE`, and `SECURITY.md` are present.
 - `npm run build`, `npx tsc --noEmit`, and `npm test` pass.
+- `npm run community:check` passes.
 - Release assets include `main.js`, `manifest.json`, and `styles.css`.
 
 Official references:

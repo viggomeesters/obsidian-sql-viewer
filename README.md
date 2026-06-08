@@ -1,8 +1,21 @@
+<p align="center">
+  <img src="assets/hero.svg" alt="SQL Viewer for Obsidian" width="100%">
+</p>
+
+<p align="center">
+  <a href="https://github.com/viggomeesters/obsidian-sql-viewer/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/viggomeesters/obsidian-sql-viewer?style=flat-square"></a>
+  <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-green?style=flat-square"></a>
+  <img alt="Obsidian 1.5.0+" src="https://img.shields.io/badge/Obsidian-1.5.0%2B-7c3aed?style=flat-square">
+  <img alt="Read-only" src="https://img.shields.io/badge/mode-read--only-0f766e?style=flat-square">
+</p>
+
 # SQL Viewer
 
 SQL Viewer is a read-only Obsidian plugin for inspecting local SQLite database files with `.sqlite`, `.sqlite3`, and `.db` extensions.
 
 It is intentionally narrow: table and view browsing, schema/source inspection, capped row previews, metadata, refresh, filtering, and a constrained read-only query runner. It is not a database editor, migration tool, export tool, charting app, or general SQL IDE.
+
+![SQL Viewer preview](assets/screenshot.svg)
 
 ## Features
 
@@ -86,6 +99,7 @@ npm install
 npm run build
 npx tsc --noEmit
 npm test
+npm run community:check
 ```
 
 For local development, copy or symlink this repository into `.obsidian/plugins/sql-viewer/` inside an Obsidian vault.
@@ -111,6 +125,23 @@ Obsidian installs community plugin files from GitHub releases. For each release:
 2. Run `npm install`, `npm run build`, `npx tsc --noEmit`, and `npm test`.
 3. Create a GitHub release whose tag exactly matches `manifest.json.version`.
 4. Attach `main.js`, `manifest.json`, and `styles.css` as release assets.
+
+## Community directory submission
+
+This repository is prepared for Obsidian Community plugin submission.
+
+Submit this repository URL:
+
+```text
+https://github.com/viggomeesters/obsidian-sql-viewer
+```
+
+Before submitting:
+
+- Make sure the latest GitHub release tag exactly matches `manifest.json.version`.
+- Make sure release assets include `main.js`, `manifest.json`, and `styles.css`.
+- Run `npm run community:check`.
+- Sign in to [community.obsidian.md](https://community.obsidian.md), link GitHub, open **Plugins -> New plugin**, enter the repository URL, and submit.
 
 ## License
 

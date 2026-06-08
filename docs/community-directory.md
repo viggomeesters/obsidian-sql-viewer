@@ -21,4 +21,5 @@ npm install
 npm run build
 npx tsc --noEmit
 npm test
+npm run community:check
 ```
