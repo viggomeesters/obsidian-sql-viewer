@@ -108,6 +108,7 @@
 .sql-viewer__source,
 .sql-viewer__result,
 .sql-viewer__query,
+.sql-viewer__sidecar,
 .sql-viewer__warnings {
   border: 1px solid var(--sql-viewer-border);
   border-radius: 8px;
@@ -212,8 +213,19 @@
 .sql-viewer__source,
 .sql-viewer__result,
 .sql-viewer__query,
+.sql-viewer__sidecar,
 .sql-viewer__warnings {
   padding: 12px;
+}
+
+.sql-viewer__sidecar {
+  max-width: 760px;
+}
+
+.sql-viewer__sidecar p {
+  color: var(--text-normal);
+  line-height: 1.45;
+  margin: 12px 0 0;
 }
 
 .sql-viewer__source pre {

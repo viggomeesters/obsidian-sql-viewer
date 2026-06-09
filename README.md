@@ -11,7 +11,7 @@
 
 # SQL Viewer
 
-SQL Viewer is a read-only Obsidian plugin for inspecting local SQLite database files with `.sqlite`, `.sqlite3`, and `.db` extensions.
+SQL Viewer is a read-only Obsidian plugin for inspecting local SQLite database files with `.sqlite`, `.sqlite3`, and `.db` extensions. It also catches SQLite sidecar files such as `.sqlite-wal`, `.sqlite-shm`, `.db-wal`, and `.db-shm` so they do not fail silently when shown by hidden-file plugins.
 
 It is intentionally narrow: table and view browsing, schema/source inspection, capped row previews, metadata, refresh, filtering, and a constrained read-only query runner. It is not a database editor, migration tool, export tool, charting app, or general SQL IDE.
 
@@ -20,6 +20,7 @@ It is intentionally narrow: table and view browsing, schema/source inspection, c
 ## Features
 
 - Opens `.sqlite`, `.sqlite3`, and `.db` files in a dedicated view.
+- Shows a read-only sidecar explanation for `.sqlite-wal`, `.sqlite-shm`, `.db-wal`, and `.db-shm` files, with an **Open base database** action when the matching database exists.
 - Shows database metadata: page count, page size, encoding, schema version, user version, and application id.
 - Lists tables, views, and indexes from `sqlite_master`.
 - Shows table/view schema through safe SQLite metadata calls.
@@ -29,6 +30,20 @@ It is intentionally narrow: table and view browsing, schema/source inspection, c
 - Runs single-statement read-only `SELECT` or `WITH` queries with a row cap and elapsed-time guard.
 - Blocks mutating SQL keywords including `INSERT`, `UPDATE`, `DELETE`, `DROP`, `ALTER`, `CREATE`, `VACUUM`, `ATTACH`, and `PRAGMA`.
 - Stays local-only: no network APIs, no clipboard APIs, and no database write-back.
+
+## SQLite sidecar files
+
+SQLite can create runtime sidecars next to the main database:
+
+- `x.sqlite-wal` and `x.db-wal` are write-ahead log files.
+- `x.sqlite-shm` and `x.db-shm` are shared-memory index files.
+
+These files are not standalone databases. SQL Viewer registers those extensions only to avoid dead clicks or parse errors in vaults where hidden/runtime files are visible. It does not replay WAL data, checkpoint, repair, vacuum, or write to the database. When the matching base database is present, the sidecar view offers an **Open base database** action:
+
+- `x.sqlite-wal` -> `x.sqlite`
+- `x.sqlite-shm` -> `x.sqlite`
+- `x.db-wal` -> `x.db`
+- `x.db-shm` -> `x.db`
 
 ## Read-only query behavior
 
@@ -74,6 +89,8 @@ https://github.com/viggomeesters/obsidian-sql-viewer
 
 Open any `.sqlite`, `.sqlite3`, or `.db` file in your vault. Obsidian will open it with SQL Viewer.
 
+If hidden-file tooling exposes `.sqlite-wal`, `.sqlite-shm`, `.db-wal`, or `.db-shm` files, opening them shows a sidecar explanation instead of trying to parse them as databases.
+
 Use the object list to choose a table or view. The main panel shows schema, source SQL, and a capped preview. Use the filter field to narrow object names and rendered preview rows. Use **Refresh database** after replacing a database file on disk.
 
 The query runner is for small read-only inspection queries:
@@ -109,6 +126,7 @@ For local development, copy or symlink this repository into `.obsidian/plugins/s
 The test suite covers:
 
 - valid `.sqlite`, `.sqlite3`, and `.db` fixtures
+- `.sqlite-wal`, `.sqlite-shm`, `.db-wal`, and `.db-shm` sidecar mapping fixtures
 - multiple tables
 - view and index discovery
 - large table row caps

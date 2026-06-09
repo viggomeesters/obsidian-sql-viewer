@@ -1,11 +1,22 @@
 import initSqlJs, { type Database, type SqlJsStatic, type SqlValue } from "sql.js";
 import wasmBinary from "sql.js/dist/sql-wasm.wasm";
 
-export const SQL_EXTENSIONS = ["sqlite", "sqlite3", "db"];
+export const SQL_DATABASE_EXTENSIONS = ["sqlite", "sqlite3", "db"] as const;
+export const SQL_SIDECAR_EXTENSIONS = ["sqlite-wal", "sqlite-shm", "db-wal", "db-shm"] as const;
+export const SQL_EXTENSIONS: string[] = [...SQL_DATABASE_EXTENSIONS, ...SQL_SIDECAR_EXTENSIONS];
 export const PREVIEW_ROW_LIMIT = 100;
 export const QUERY_ROW_LIMIT = 200;
 export const QUERY_TIMEOUT_MS = 750;
 export const MAX_QUERY_LENGTH = 5000;
+
+export type SqliteSidecarExtension = (typeof SQL_SIDECAR_EXTENSIONS)[number];
+export type SqliteSidecarKind = "write-ahead log" | "shared-memory index";
+
+export interface SqliteSidecarInfo {
+  databasePath: string;
+  extension: SqliteSidecarExtension;
+  kind: SqliteSidecarKind;
+}
 
 export type SqliteObjectType = "table" | "view" | "index";
 
@@ -62,6 +73,18 @@ export interface QueryValidation {
   message?: string;
 }
 
+const SQLITE_SIDECAR_SUFFIXES: Array<{
+  databaseSuffix: string;
+  extension: SqliteSidecarExtension;
+  kind: SqliteSidecarKind;
+  suffix: string;
+}> = [
+  { extension: "sqlite-wal", suffix: ".sqlite-wal", databaseSuffix: ".sqlite", kind: "write-ahead log" },
+  { extension: "sqlite-shm", suffix: ".sqlite-shm", databaseSuffix: ".sqlite", kind: "shared-memory index" },
+  { extension: "db-wal", suffix: ".db-wal", databaseSuffix: ".db", kind: "write-ahead log" },
+  { extension: "db-shm", suffix: ".db-shm", databaseSuffix: ".db", kind: "shared-memory index" },
+];
+
 let sqlModulePromise: Promise<SqlJsStatic> | null = null;
 const sqlWasmBinary = wasmBinary.buffer.slice(
   wasmBinary.byteOffset,
@@ -114,6 +137,18 @@ export function validateReadOnlyQuery(sql: string): QueryValidation {
   if (match) return { ok: false, message: `Blocked keyword: ${match[1].toUpperCase()}` };
 
   return { ok: true };
+}
+
+export function getSqliteSidecarInfo(path: string): SqliteSidecarInfo | null {
+  const normalized = path.toLowerCase();
+  const match = SQLITE_SIDECAR_SUFFIXES.find((sidecar) => normalized.endsWith(sidecar.suffix));
+  if (!match) return null;
+
+  return {
+    databasePath: `${path.slice(0, -match.suffix.length)}${match.databaseSuffix}`,
+    extension: match.extension,
+    kind: match.kind,
+  };
 }
 
 function runSafeSelect(db: Database, sql: string, rowLimit: number): QueryResult {

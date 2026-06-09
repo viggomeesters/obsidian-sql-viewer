@@ -1,7 +1,7 @@
 {
   "id": "sql-viewer",
   "name": "SQL Viewer",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "minAppVersion": "1.5.0",
   "description": "Open SQLite database files as read-only schema, preview, and query views.",
   "author": "Viggo Meesters",

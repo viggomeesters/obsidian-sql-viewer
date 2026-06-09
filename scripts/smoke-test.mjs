@@ -16,8 +16,12 @@ const assertions = [
   [!/obsidian/i.test(manifest.description), "manifest description avoids product name"],
   [/^[a-z-]+$/.test(manifest.id) && !manifest.id.includes("obsidian") && !manifest.id.endsWith("plugin"), "manifest id follows directory rules"],
   [main.includes("registerExtensions(SQL_EXTENSIONS"), "SQLite extensions are registered"],
+  [main.includes("getSqliteSidecarInfo(file.path)"), "SQLite sidecars are detected before database parsing"],
+  [main.includes("Open base database"), "SQLite sidecar view can open the base database"],
   [main.includes("extends FileView"), "binary FileView is used"],
   [main.includes("this.app.vault.readBinary(file)"), "vault binary reader is used"],
+  [sqlite.includes('"sqlite-wal"') && sqlite.includes('"sqlite-shm"') && sqlite.includes('"db-wal"') && sqlite.includes('"db-shm"'), "SQLite sidecar extensions are registered"],
+  [sqlite.includes("getSqliteSidecarInfo"), "SQLite sidecar base-path helper exists"],
   [sqlite.includes("sql-wasm.wasm"), "sql.js WASM dependency is bundled"],
   [sqlite.includes("PRAGMA query_only = ON"), "SQLite query_only guard is enabled"],
   [sqlite.includes("Only SELECT and WITH queries are allowed"), "query allowlist message exists"],
@@ -38,6 +42,10 @@ const assertions = [
   [fs.existsSync("test-fixtures/multiple.sqlite3"), "multi-object SQLite fixture exists"],
   [fs.existsSync("test-fixtures/large.db"), "large SQLite fixture exists"],
   [fs.existsSync("test-fixtures/malformed.db"), "malformed SQLite fixture exists"],
+  [fs.existsSync("test-fixtures/sidecar.sqlite-wal"), "sqlite-wal sidecar fixture exists"],
+  [fs.existsSync("test-fixtures/sidecar.sqlite-shm"), "sqlite-shm sidecar fixture exists"],
+  [fs.existsSync("test-fixtures/sidecar.db-wal"), "db-wal sidecar fixture exists"],
+  [fs.existsSync("test-fixtures/sidecar.db-shm"), "db-shm sidecar fixture exists"],
 ];
 
 const failures = assertions.filter(([passes]) => !passes).map(([, label]) => label);

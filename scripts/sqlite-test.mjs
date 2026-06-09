@@ -20,6 +20,8 @@ await esbuild.build({
 });
 
 const {
+  SQL_EXTENSIONS,
+  getSqliteSidecarInfo,
   inspectSqliteDatabase,
   previewSqliteObject,
   runReadOnlyQuery,
@@ -67,6 +69,24 @@ for (const sql of [
 
 await assert.rejects(() => inspectSqliteDatabase(readFixture("malformed.db")));
 
+assert.deepEqual(
+  ["sqlite-wal", "sqlite-shm", "db-wal", "db-shm"].filter((extension) => SQL_EXTENSIONS.includes(extension)),
+  ["sqlite-wal", "sqlite-shm", "db-wal", "db-shm"],
+);
+
+for (const [sidecarPath, databasePath, kind] of [
+  [".brain-vault-index.sqlite-wal", ".brain-vault-index.sqlite", "write-ahead log"],
+  [".brain-vault-index.sqlite-shm", ".brain-vault-index.sqlite", "shared-memory index"],
+  [".life_os.db-wal", ".life_os.db", "write-ahead log"],
+  [".life_os.db-shm", ".life_os.db", "shared-memory index"],
+]) {
+  const info = getSqliteSidecarInfo(sidecarPath);
+  assert.equal(info?.databasePath, databasePath);
+  assert.equal(info?.kind, kind);
+}
+
+assert.equal(getSqliteSidecarInfo("notes.sqlite"), null);
+
 fs.rmSync(new URL("../.tmp-sqlite-test.mjs", import.meta.url));
 console.log("SQL Viewer SQLite fixture tests passed.");
 
@@ -102,6 +122,10 @@ async function createFixtures() {
   saveFixture("large.db", largeDb);
 
   fs.writeFileSync(path.join(fixtureDir, "malformed.db"), Buffer.from("not a sqlite database"));
+  fs.writeFileSync(path.join(fixtureDir, "sidecar.sqlite-wal"), Buffer.from("sqlite wal sidecar fixture"));
+  fs.writeFileSync(path.join(fixtureDir, "sidecar.sqlite-shm"), Buffer.from("sqlite shm sidecar fixture"));
+  fs.writeFileSync(path.join(fixtureDir, "sidecar.db-wal"), Buffer.from("db wal sidecar fixture"));
+  fs.writeFileSync(path.join(fixtureDir, "sidecar.db-shm"), Buffer.from("db shm sidecar fixture"));
 }
 
 function saveFixture(name, db) {

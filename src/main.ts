@@ -9,10 +9,12 @@ import {
 import {
   type QueryResult,
   type SqliteInspection,
+  type SqliteSidecarInfo,
   type SqliteObjectSummary,
   type SqliteTablePreview,
   QUERY_ROW_LIMIT,
   SQL_EXTENSIONS,
+  getSqliteSidecarInfo,
   inspectSqliteDatabase,
   previewSqliteObject,
   runReadOnlyQuery,
@@ -64,6 +66,8 @@ class SqlViewerView extends FileView {
   private queryResult: QueryResult | null = null;
   private queryMessage = "";
   private errorMessage = "";
+  private sidecarInfo: SqliteSidecarInfo | null = null;
+  private sidecarDatabase: TFile | null = null;
 
   constructor(leaf: WorkspaceLeaf) {
     super(leaf);
@@ -94,10 +98,29 @@ class SqlViewerView extends FileView {
     this.queryResult = null;
     this.queryMessage = "";
     this.errorMessage = "";
+    this.sidecarInfo = null;
+    this.sidecarDatabase = null;
     this.contentEl.empty();
   }
 
   private async loadDatabase(file: TFile): Promise<void> {
+    const sidecarInfo = getSqliteSidecarInfo(file.path);
+    if (sidecarInfo) {
+      this.fileData = null;
+      this.inspection = null;
+      this.activeObject = "";
+      this.preview = null;
+      this.queryText = "";
+      this.queryResult = null;
+      this.queryMessage = "";
+      this.errorMessage = "";
+      this.sidecarInfo = sidecarInfo;
+      const databaseFile = this.app.vault.getAbstractFileByPath(sidecarInfo.databasePath);
+      this.sidecarDatabase = databaseFile instanceof TFile ? databaseFile : null;
+      this.render();
+      return;
+    }
+
     try {
       this.fileData = await this.app.vault.readBinary(file);
       this.inspection = await inspectSqliteDatabase(this.fileData);
@@ -106,6 +129,8 @@ class SqlViewerView extends FileView {
       this.queryResult = null;
       this.queryMessage = "";
       this.errorMessage = "";
+      this.sidecarInfo = null;
+      this.sidecarDatabase = null;
       await this.loadPreview();
     } catch (error) {
       this.fileData = null;
@@ -113,6 +138,8 @@ class SqlViewerView extends FileView {
       this.activeObject = "";
       this.preview = null;
       this.errorMessage = `Unable to read SQLite database: ${getErrorMessage(error)}`;
+      this.sidecarInfo = null;
+      this.sidecarDatabase = null;
     }
     this.render();
   }
@@ -146,7 +173,12 @@ class SqlViewerView extends FileView {
     }
 
     if (!isSqliteFile(this.file)) {
-      renderMessage(container, "This viewer only supports .sqlite, .sqlite3, and .db files.");
+      renderMessage(container, "This viewer supports .sqlite, .sqlite3, .db, and SQLite sidecar files.");
+      return;
+    }
+
+    if (this.sidecarInfo) {
+      this.renderSidecarInfo(container);
       return;
     }
 
@@ -185,26 +217,62 @@ class SqlViewerView extends FileView {
   private renderToolbar(parent: HTMLElement): void {
     const toolbar = parent.createDiv({ cls: "sql-viewer__toolbar" });
 
-    const searchWrap = toolbar.createDiv({ cls: "sql-viewer__search" });
-    setIcon(searchWrap.createSpan({ cls: "sql-viewer__search-icon" }), "search");
-    const searchInput = searchWrap.createEl("input", {
-      attr: {
-        "aria-label": "Filter objects and rows",
-        placeholder: "Filter",
-        spellcheck: "false",
-        type: "search",
-        value: this.filterValue,
-      },
-    });
-    searchInput.addEventListener("input", () => {
-      this.filterValue = searchInput.value;
-      this.render();
-    });
+    if (!this.sidecarInfo) {
+      const searchWrap = toolbar.createDiv({ cls: "sql-viewer__search" });
+      setIcon(searchWrap.createSpan({ cls: "sql-viewer__search-icon" }), "search");
+      const searchInput = searchWrap.createEl("input", {
+        attr: {
+          "aria-label": "Filter objects and rows",
+          placeholder: "Filter",
+          spellcheck: "false",
+          type: "search",
+          value: this.filterValue,
+        },
+      });
+      searchInput.addEventListener("input", () => {
+        this.filterValue = searchInput.value;
+        this.render();
+      });
+    }
 
     const refreshButton = createIconButton(toolbar, "refresh-cw", "Refresh database");
     refreshButton.addEventListener("click", () => {
       void this.reloadFile();
     });
+  }
+
+  private renderSidecarInfo(parent: HTMLElement): void {
+    if (!this.file || !this.sidecarInfo) return;
+
+    const panel = parent.createDiv({ cls: "sql-viewer__sidecar" });
+    const header = panel.createDiv({ cls: "sql-viewer__section-header" });
+    header.createDiv({ cls: "sql-viewer__section-title", text: "SQLite sidecar file" });
+    header.createDiv({
+      cls: "sql-viewer__section-subtitle",
+      text: this.sidecarInfo.kind,
+    });
+
+    const summary = panel.createDiv({ cls: "sql-viewer__summary" });
+    summary.createSpan({ cls: "sql-viewer__pill", text: this.sidecarInfo.extension });
+    summary.createSpan({ cls: "sql-viewer__pill", text: this.sidecarInfo.kind });
+    summary.createSpan({
+      cls: "sql-viewer__pill",
+      text: this.sidecarDatabase ? "base database found" : "base database not found",
+    });
+
+    panel.createEl("p", {
+      text: "This is a SQLite runtime sidecar, not a standalone database. SQL Viewer does not parse WAL or SHM files as databases and never writes checkpoint, repair, or maintenance changes.",
+    });
+    panel.createEl("p", {
+      text: `Expected base database: ${this.sidecarInfo.databasePath}`,
+    });
+
+    if (this.sidecarDatabase) {
+      const openButton = createTextButton(panel, "Open base database");
+      openButton.addEventListener("click", () => {
+        void this.openBaseDatabase();
+      });
+    }
   }
 
   private renderObjectList(parent: HTMLElement): void {
@@ -330,6 +398,20 @@ class SqlViewerView extends FileView {
       return;
     }
     await this.loadDatabase(this.file);
+  }
+
+  private async openBaseDatabase(): Promise<void> {
+    if (!this.sidecarDatabase) {
+      new Notice("Base SQLite database not found");
+      return;
+    }
+
+    const leaf = this.app.workspace.getLeaf(false);
+    await leaf.setViewState({
+      type: VIEW_TYPE_SQL_VIEWER,
+      state: { file: this.sidecarDatabase.path },
+      active: true,
+    });
   }
 }
 
