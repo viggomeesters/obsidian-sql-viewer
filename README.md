@@ -144,22 +144,9 @@ Obsidian installs community plugin files from GitHub releases. For each release:
 3. Create a GitHub release whose tag exactly matches `manifest.json.version`.
 4. Attach `main.js`, `manifest.json`, and `styles.css` as release assets.
 
-## Community directory submission
+## Community directory
 
-This repository is prepared for Obsidian Community plugin submission.
-
-Submit this repository URL:
-
-```text
-https://github.com/viggomeesters/obsidian-sql-viewer
-```
-
-Before submitting:
-
-- Make sure the latest GitHub release tag exactly matches `manifest.json.version`.
-- Make sure release assets include `main.js`, `manifest.json`, and `styles.css`.
-- Run `npm run community:check`.
-- Sign in to [community.obsidian.md](https://community.obsidian.md), link GitHub, open **Plugins -> New plugin**, enter the repository URL, and submit.
+SQL Viewer is listed in the [Obsidian Community directory](https://community.obsidian.md/plugins/sql-viewer).
 
 ## License
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.3 - 2026-10-25
+
+- Cross-platform production build.
+- Current Community installation documentation.
+
+
 ## 0.1.1
 
 - Improved object list layout so type chips, object names, and row counts do not overlap in Obsidian.
