@@ -8,7 +8,7 @@ The compact layout previously depended on the entire application viewport, leavi
 
 Tests use fictional fixtures in a separate synthetic vault on macOS arm64, the actual Obsidian 1.15.1 renderer and Electron 39.8.3. A bounded own bootstrap changes CLI socket ownership and test-window handling, with mock keychain enabled. The regular application, CLI endpoint and source files are protected and checked separately. The test window is allowed to be visible and remains unfocused; no OS mouse or keyboard input is used.
 
-Local validation uses the checked-in lockfile with ordinary `npm ci`, TypeScript checking, production build, existing scripts and production dependency audit. The official `eslint-plugin-obsidianmd` 0.6.0 recommended configuration checks source, manifest, package metadata and license with zero errors or warnings. Its isolated checker dependencies are not shipped. The existing repository npm test suite passed.
+Local validation uses the checked-in lockfile with ordinary `npm ci`, TypeScript checking, production build, existing scripts and production dependency audit. The official `eslint-plugin-obsidianmd` 0.6.0 recommended configuration checks source, manifest, package metadata and license with zero errors or warnings. Its development dependencies are not shipped. The existing repository npm test suite passed.
 
 ## Scope limits
 
