@@ -1,4 +1,6 @@
 .sql-viewer {
+  container-name: sql-viewer;
+  container-type: inline-size;
   --sql-viewer-border: var(--background-modifier-border);
   --sql-viewer-muted: var(--text-muted);
   --sql-viewer-panel: var(--background-secondary);
@@ -305,6 +307,21 @@
   margin-top: 8px;
 }
 
+@container sql-viewer (max-width: 760px) {
+  .sql-viewer__body {
+    grid-template-columns: 1fr;
+  }
+
+  .sql-viewer__objects {
+    max-height: none;
+    position: static;
+  }
+
+  .sql-viewer__toolbar,
+  .sql-viewer__search {
+    width: 100%;
+  }
+}
 @media (max-width: 760px) {
   .sql-viewer {
     padding: 12px;
